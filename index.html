@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Three.js FBX model with clickable pieces</title>
+    <style>
+      body { margin: 0; }
+      canvas { width: 100%; height: 100% }
+    </style>
+  </head>
+  <body>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/FBXLoader.js"></script>
+    <script>
+      // Set up the scene, camera, and renderer
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Import the FBX model
+      var loader = new THREE.FBXLoader();
+      loader.load('model.fbx', function (object) {
+        scene.add(object);
+
+        // Set up an event listener to change the color of the model when clicked
+        object.traverse(function (child) {
+          if (child instanceof THREE.Mesh) {
+            child.material.color.set(0xffffff); // set the initial color of the model to white
+
+            child.on('click', function () {
+              // Generate a random color for the model
+              var color = new THREE.Color();
+              color.setHSL(Math.random(), 1.0, 0.5);
+              child.material.color.set(color);
+            });
+          }
+        });
+      });
+
+      // Move the camera back and center it on the scene
+      camera.position.z = 5;
+      camera.lookAt(scene.position);
+
+      // Animate the scene
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>
